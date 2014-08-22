@@ -35,9 +35,9 @@ bool PCA9555::setPolarity(word pol)
 {
     int status;
     Wire.beginTransmission(addr);
-    Wire.send(0x04);            // Register 4
-    Wire.send(pol & 0x00FF);    // Pins 7..0
-    Wire.send(pol>>8);          // Pins 15..8
+    Wire.write(0x04);            // Register 4
+    Wire.write(pol & 0x00FF);    // Pins 7..0
+    Wire.write(pol>>8);          // Pins 15..8
     status = Wire.endTransmission();
     return (status == 0);
 }
@@ -48,9 +48,9 @@ bool PCA9555::setDirection(word dir)
 {
     int status;
     Wire.beginTransmission(addr);
-    Wire.send(0x06);            // Register 6
-    Wire.send(dir & 0x00FF);    // Pins 7..0
-    Wire.send(dir>>8);          // Pins 15..8
+    Wire.write(0x06);            // Register 6
+    Wire.write(dir & 0x00FF);    // Pins 7..0
+    Wire.write(dir>>8);          // Pins 15..8
     status = Wire.endTransmission();
     return (status == 0);
 }
@@ -61,9 +61,9 @@ bool PCA9555::write(word data)
 {
     int status;
     Wire.beginTransmission(addr);
-    Wire.send(0x02);            // Register 2
-    Wire.send(data & 0x00FF);   // Pins 7..0
-    Wire.send(data>>8);         // Pins 15..8
+    Wire.write(0x02);            // Register 2
+    Wire.write(data & 0x00FF);   // Pins 7..0
+    Wire.write(data>>8);         // Pins 15..8
     status = Wire.endTransmission();
     return (status == 0);
 }
@@ -81,13 +81,13 @@ bool PCA9555::read()
     
     // Set register to zero for later reading
     Wire.beginTransmission(addr);
-    Wire.send(0x00);
+    Wire.write(0x00);
     status += Wire.endTransmission();
     
     // Attempt to read two bytes
-    if (!status && Wire.requestFrom(addr, 2) == 2){
-        b0 = Wire.recieve();
-        b1 = Wire.recieve();
+    if (!status && Wire.requestFrom(addr, (byte)2) == 2){
+        b0 = Wire.read();
+        b1 = Wire.read();
         curValues = word(b1, b0);
     }
 

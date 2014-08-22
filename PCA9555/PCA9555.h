@@ -7,12 +7,13 @@
 #define PCA9555_h
 
 #include "Arduino.h"
+#include <Wire.h>
 
 class PCA9555
 {
 private:
-    static byte baseAddr = 0x20;    // 7-bit family address
-    byte addr;                      // Full device address
+    static const byte baseAddr = 0x20;  // 7-bit family address
+    byte addr;                          // Full device address
     word curValues;
     word prevValues;
 public:
