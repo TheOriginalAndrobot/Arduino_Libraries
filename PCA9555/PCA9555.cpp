@@ -24,8 +24,7 @@ bool PCA9555::begin()
     status &= setPolarity(0x0000);  // Default to normal polarity
     status &= setDirection(0xFFFF); // Default to all inputs
     status &= read();               // Read initial values
-    prevValues = curValues;
-    
+
     return status;
 }
 
@@ -34,11 +33,17 @@ bool PCA9555::begin()
 bool PCA9555::setPolarity(word pol)
 {
     int status;
+
     Wire.beginTransmission(addr);
     Wire.write(0x04);            // Register 4
     Wire.write(pol & 0x00FF);    // Pins 7..0
     Wire.write(pol>>8);          // Pins 15..8
     status = Wire.endTransmission();
+
+    // Re-read initial values & reset any events
+    read();
+    prevValues = curValues;
+
     return (status == 0);
 }
 
@@ -47,11 +52,17 @@ bool PCA9555::setPolarity(word pol)
 bool PCA9555::setDirection(word dir)
 {
     int status;
+
     Wire.beginTransmission(addr);
     Wire.write(0x06);            // Register 6
     Wire.write(dir & 0x00FF);    // Pins 7..0
     Wire.write(dir>>8);          // Pins 15..8
     status = Wire.endTransmission();
+
+    // Re-read initial values & reset any events
+    read();
+    prevValues = curValues;
+
     return (status == 0);
 }
 
@@ -60,11 +71,13 @@ bool PCA9555::setDirection(word dir)
 bool PCA9555::write(word data)
 {
     int status;
+
     Wire.beginTransmission(addr);
     Wire.write(0x02);            // Register 2
     Wire.write(data & 0x00FF);   // Pins 7..0
     Wire.write(data>>8);         // Pins 15..8
     status = Wire.endTransmission();
+
     return (status == 0);
 }
 
@@ -75,15 +88,15 @@ bool PCA9555::read()
     int status = 0;
     byte b0;
     byte b1;
-    
+
     // Even if the read fails, we will clear out any changes
     prevValues = curValues;
-    
+
     // Set register to zero for later reading
     Wire.beginTransmission(addr);
     Wire.write(0x00);
     status += Wire.endTransmission();
-    
+
     // Attempt to read two bytes
     if (!status && Wire.requestFrom(addr, (byte)2) == 2){
         b0 = Wire.read();
